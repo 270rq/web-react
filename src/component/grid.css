@@ -1,0 +1,65 @@
+.grid-table-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  @media (min-width: 768px) {
+    .grid-table-container {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  
+  @media (min-width: 992px) {
+    .grid-table-container {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  @media (min-width: 1200px) {
+    .grid-table-container {
+      grid-template-columns: repeat(2);
+    }
+  }
+  
+.card-weather-t,
+.card-weather-5-days {
+  width: 32rem;
+  height: 20rem;
+}
+
+.card-weather-detail,
+.card-weather-hourly {
+  width: 50rem;
+  height: 20rem;
+  
+}
+.card-weather-detail {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.group-flex {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between; 
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+}
+.group-card {
+  display: inline-block;
+  margin-right: 1rem;
+  text-align: center;
+}
+
+
+.hourly-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%; }
+
+.GeiLocation-button:hover{background-color: #3c9612 !important;
+}

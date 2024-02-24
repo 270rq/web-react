@@ -29,7 +29,7 @@ const Main = () => {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Sider trigger={null} collapsible collapsed={collapsed}>
+      <Sider className={!collapsed ? "sider":""} trigger={null} collapsible collapsed={collapsed}>
         <div className="demo-logo-vertical" />
         <Menu
           theme="dark"
@@ -73,7 +73,7 @@ const Main = () => {
             </div>
           </div>
         </Header>
-        <Content style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Content className={!collapsed?'hideContent':''} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           {renderPage()}
         </Content>
       </Layout>

@@ -4,7 +4,7 @@ import './grid.css';
 
 const GridTable = () => (
   <div className="grid-table-container">
-    <Row gutter={[8, 16]}>
+    <Row gutter={[8, 16]} style={{marginBottom:"1rem", justifyContent:"center"}}>
       
         <Card className="card-weather-t">Погода+t</Card>
       
@@ -23,7 +23,7 @@ const GridTable = () => (
 </Card>
       
     </Row>
-    <Row gutter={[1, 2]}>
+    <Row gutter={[8, 16]} style={{ justifyContent:"center"}}>
     
     <Card className="card-weather-5-days" title="Прогноз на 5 дней" >
   <Row gutter={[1, 2]} style={{ flexDirection: 'column' }}>
@@ -36,7 +36,7 @@ const GridTable = () => (
       
       
         <Card className="card-weather-hourly"  title="Почасовая погода">
-          <Row gutter={[0.25, 0.25]} justify="space-between">
+          <div className='card-weather-hourly-container' >
             {[...Array(5)].map((_, index) => (
              
                 <Card className="hourly-card">
@@ -44,7 +44,7 @@ const GridTable = () => (
                 </Card>
        
             ))}
-          </Row>
+          </div>
         </Card>
     
     </Row>

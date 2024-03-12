@@ -1,7 +1,7 @@
 import React from 'react';
 import MapComponent from './map';
 import GridMapTable from './infornation';
-import './MapPage.css'; // Создайте файл стилей (например, MapPage.css)
+import './MapPage.css';
 
 const MapPage = () => {
   return (

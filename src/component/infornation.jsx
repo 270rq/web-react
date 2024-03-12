@@ -1,28 +1,35 @@
 import React from 'react';
-import { Col, Row, Card } from 'antd';
+import { Tooltip } from 'antd';
+import mask from '../icon/mask.svg';
+import glasses from '../icon/glasses.svg';
+import tshirt from '../icon/tshirt.svg';
+import shower from '../icon/shower.svg';
+import window from '../icon/window.svg';
+import bisicle from '../icon/bisicle.svg';
 
-const GridMapTable = () => (
-  <>
-    <Row gutter={[16, 16]}>
-      <Col span={8}>
-        <Card style={{ width: '40rem', height: '20rem' }}>инфа про аллерген</Card>
-      </Col>
-    </Row>
-    <Row gutter={[16, 16]}>
-      <Col span={8}>
-        <Card style={{width: '40rem', height: '20rem' }}>
-          рекомендации
-          <Row gutter={[16, 16]}>
-            {[...Array(6)].map((_, index) => (
-              <Col span={8} key={index}>
-                <Card>{index + 1}</Card>
-              </Col>
-            ))}
-          </Row>
-        </Card>
-      </Col>
-    </Row>
-  </>
-);
+const GridMapTable = () => {
+  const recommendations = [
+    { icon: mask, text: "Маски настоятельно рекомендуются" },
+    { icon: glasses, text: "Настоятельно рекомендуется солнцезащитные очки" },
+    { icon: tshirt, text: "Не носите шерстяную одежду на открытом воздухе" },
+    { icon: shower, text: "Рекомендуется принять душ после выхода на улицу" },
+    { icon: window, text: "Рекомендуется закрыть окна и двери и включить очиститель воздуха" },
+    { icon: bisicle, text: "Избегайте занятий на свежем воздухе" }
+  ];
+
+  return (
+    <>
+                <Tooltip title={recommendations.map((rec) => (
+                  <div>
+                    <img src={rec.icon} alt="Иконка рекомендации" style={{ width: '20px', marginRight: '8px' }} />
+                    <span>{rec.text}</span>
+                  </div>
+                ))}>
+                  <button style={{ border: 'none', background: 'none', cursor: 'pointer', padding: '0' }}>рекомендации</button>
+                </Tooltip>
+    
+    </>
+  );
+};
 
 export default GridMapTable;

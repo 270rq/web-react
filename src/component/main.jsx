@@ -29,7 +29,7 @@ const Main = () => {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Sider className={!collapsed ? "sider":""} trigger={null} collapsible collapsed={collapsed}>
+      <Sider className={!collapsed ? "sider":"sider-non-active"} trigger={null} collapsible collapsed={collapsed}>
         <div className="demo-logo-vertical" />
         <Menu
           theme="dark"
@@ -50,28 +50,26 @@ const Main = () => {
       </Sider>
       <Layout>
         <Header style={{ background: '#fff', padding: 0, display: 'flex', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', width: "100%" }}>
             <Button
               type="text"
               icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
               onClick={() => setCollapsed(!collapsed)}
               style={{
                 fontSize: '16px',
-                width: 64,
-                height: 64,
+                width: "4rem",
+                height: "100%",
+                flexShrink: "0",
               }}
             />
             <span>Menu</span>
-          </div>
-          <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <SearchCity />
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', marginLeft: '10px' }}>
             <GeoLocation />
             <div style={{ marginLeft: '10px' }}>
               <SwitchTemp />
             </div>
           </div>
+            
         </Header>
       <Content className={!collapsed?'hideContent':''} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           {renderPage()}

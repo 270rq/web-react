@@ -13,10 +13,13 @@ code {
 }
 @media (max-width: 670px) {
   .sider{
-    width: 90vw !important;
+    width: 86vw !important;
     min-width: none !important;
     max-width: none !important;
     flex: none !important;
+  }
+  .sider-non-active{
+    display: none !important;
   }
   .hideContent{
     display: none !important;

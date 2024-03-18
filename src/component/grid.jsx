@@ -1,7 +1,8 @@
-import React from 'react';
+import React, {useEffect , useState} from 'react';
 import { Row, Card, Col, Space} from 'antd';
 import './grid.css';
 import './font.css';
+import CurrentDateTime from '../component/time';
 import arow_wind from '../icon/arow-wind.svg';
 import weather_description from '../weather3d/01_sunny_color.svg';
 import sunrise from '../icon/sunrise-svgrepo-com.svg';
@@ -11,14 +12,37 @@ import wind_speed from '../icon/wind-svgrepo-com.svg';
 import pressure from '../icon/gauge-high-svgrepo-com.svg';
 import uv from '../icon/uv-index.svg';
 
-const GridTable = () => (
+
+const GridTable = () => {
+  const [fiveDays,setFiveDays] = useState();
+  useEffect(() => {
+  const generateDaysOfWeek = () => {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const today = new Date().getDay(); // Получаем сегодняшний день недели (0 - воскресенье, 1 - понедельник, и т.д.)
+    const daysFromTomorrow = days.slice(today + 1, today + 6); // Начиная с завтрашнего дня
+
+    return daysFromTomorrow.map((day, index) => {
+      const currentDate = new Date();
+      const nextDay = new Date(currentDate.getTime() + (index + 1) * 24 * 60 * 60 * 1000); // Добавляем дни к текущей дате
+      const dayOfWeek = day;
+      const date = nextDay.getDate();
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const month = monthNames[nextDay.getMonth()];
+
+      return { dayOfWeek, date: `${date} ${month}` };
+    });
+  };
+  console.log(generateDaysOfWeek);
+  setFiveDays(generateDaysOfWeek);
+  }, [])
+  return(
+  
   <div className="grid-table-container">
     <Row gutter={[8, 16]} style={{marginBottom:"1rem", justifyContent:"center"}}>
       
     <Card className="card-weather-t">
   <div className="font city-name">Athens</div>
-  <div className="font time">09:03</div>
-  <div className="font date">Thursday, 31 Aug</div>
+  <CurrentDateTime />
   </Card>
       
   <Card className="card-weather-detail">
@@ -27,10 +51,6 @@ const GridTable = () => (
     <Card className="detail-card detail-card-temp " style={{ marginRight: '16px' }}>
   <Col className='detail-card-column' gutter={[16, 8]}>
     <div className="font detail-card-content detail-card-temperature">24°C</div>
-    <div className="font detail-card-content detail-card-temperature-small">
-  <span className="temperature-label">Ощущается: </span>
-  22°C
-</div>
     <div className="sun-content">
       <div className="sunrise-content">
         <img className="sunrise-icon" src={sunrise} alt={`Иконка восхода`} />
@@ -91,37 +111,41 @@ const GridTable = () => (
     
     <Card className="card-weather-5-days" size='small' style={{background:"some"}}  title={<div className="font card-title">Погода на 5 дней</div>}>
   <Row gutter={[1, 2]} style={{ flexDirection: 'column', justifyContent: "space-between", height:"100%" }}>
-    {[...Array(5)].map((_, index) => (
-      <Row className="card-weather-5-days-row" gutter={[4, 4]} key={index}>
-        <Space size={100}>
-          <img className="card-weather-5-days-icon" src={arow_wind} alt={`Погода`} />
-          <div className="font card-weather-5-days-temperature">20°C</div>
-          <div className="font dayOfFiveSome">Friday, 1 Sep</div>
-        </Space>
-      </Row>
-    ))}
+   {fiveDays && fiveDays.map((day, index) => (
+  <Row className="card-weather-5-days-row" gutter={[4, 4]} key={index}>
+    <Space size={100}>
+      <img className="card-weather-5-days-icon" src={arow_wind} alt={`Погода`} />
+      <div className="font card-weather-5-days-temperature">20°C</div>
+      <div>{day.dayOfWeek}, {day.date}</div>
+    </Space>
+  </Row>
+))}
   </Row>
 </Card>
       
       
 <Card className="card-weather-hourly" size='small' title={<div className="font card-title">Почасовая погода</div>}>
   <div className='card-weather-hourly-container'>
-    {[...Array(5)].map((_, index) => (
+    {[...Array(5)].map((_, index) =>{
+      const curHour = new Date().getHours();
+       const nextHour = (curHour + index) % 24;
+      return (
       <Card className="hourly-card" key={index}>
       <Row gutter={[16, 8]} align="center" style={{display: 'flex', flexDirection:'column'}}>
-        <div className="font hourly-card-content hourly-card-content-time">12:00</div>
+      <div className="font hourly-card-content hourly-card-content-time"> {nextHour}:00</div>
         <img src={arow_wind} alt={`Погода ${index + 1}`} />
         <div className="font hourly-card-content hourly-card-content-temperature">20°C</div>
         <img src={arow_wind} alt={`Ветер ${index + 1}`} />
         <div className="font hourly-card-content hourly-card-content-wind">3m/s</div>
       </Row>
     </Card>
-    ))}
+    )})}
   </div>
 </Card>
     
     </Row>
   </div>
-);
+
+)}
 
 export default GridTable;

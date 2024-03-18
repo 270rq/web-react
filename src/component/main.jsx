@@ -6,7 +6,6 @@ import Login from './login';
 import MapPage from './MapPage';
 import SearchCity from './search';
 import GeoLocation from './geolocation';
-import SwitchTemp from './switch';
 
 const { Header, Sider, Content } = Layout;
 
@@ -65,11 +64,7 @@ const Main = () => {
             <span>Menu</span>
             <SearchCity />
             <GeoLocation />
-            <div style={{ marginLeft: '10px' }}>
-              <SwitchTemp />
-            </div>
-          </div>
-            
+          </div>  
         </Header>
       <Content className={!collapsed?'hideContent':''} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           {renderPage()}

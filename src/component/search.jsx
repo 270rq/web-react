@@ -1,21 +1,11 @@
 import React, {useEffect, useState } from 'react';
-import { Input, List } from 'antd';
+import { Select } from 'antd';
 import axios from 'axios';
 
-const { Search } = Input;
 
 const CitySearch = () => {
-  const [searchValue, setSearchValue] = useState('');
-  const [cities, setCities] = useState([]);
   const [allCities, setAllCities] = useState([]);
 
-  useEffect(() => {
-    if (searchValue.trim() !== '') {
-      setCities(allCities.filter(city=>city.toLowerCase().includes(searchValue.toLocaleLowerCase()))); } 
-     else {
-      setCities([]);
-    }
-  }, [allCities, searchValue]);
   useEffect(()=>{
 const searchCities = async () => {
 try {
@@ -30,30 +20,24 @@ console.error('Error fetching data:', error);
 searchCities();
     
   },[])
-  
-  const onSearch = (value) => {
-    setSearchValue(value);
+  const onChange = (value) => {
+    console.log(`selected ${value}`);
   };
+  const filterOption = (input, option) =>
+  (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
 
   return (
-    <div>
-      <Search 
-        placeholder="Поиск города..." 
-        onSearch={onSearch} 
-        style={{ margin: "0 1rem", width: "73%" }} 
-      />
-      <List
-        dataSource={cities}
-        renderItem={(city, index) => (
-          <List.Item key={index}>
-            {city}
-          </List.Item>
-        )}
-        style={{ margin: "1rem 1rem", width: "73%" }}
-      />
+     <Select
+     style={{ width: "70%" }}
+    showSearch
+    placeholder="Выбери город"
+    optionFilterProp="children"
+    onChange={onChange}
+    filterOption={filterOption}
+    options={allCities.map(city=>({label:city,value:city}))}
+  />
     
 
-</div>
 
 );
 };

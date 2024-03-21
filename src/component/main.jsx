@@ -12,7 +12,10 @@ const { Header, Sider, Content } = Layout;
 const Main = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [currentPage, setCurrentPage] = useState('weather'); // Страница по умолчанию - погода
-
+  const afterLogin = () => {
+    setCurrentPage('weather');
+    
+  }
   const renderPage = () => {
     switch (currentPage) {
       case 'weather':
@@ -20,7 +23,7 @@ const Main = () => {
       case 'map':
         return <MapPage/>;
       case 'login':
-        return <Login/>;
+        return <Login onLogin={afterLogin}/>;
       default:
         return <GridTable />;
     }
@@ -33,6 +36,7 @@ const Main = () => {
         <Menu
           theme="dark"
           mode="inline"
+          selectedKeys={[`${currentPage}`]}
           defaultSelectedKeys={['weather']}
           onSelect={({ key }) => setCurrentPage(key)}
         >

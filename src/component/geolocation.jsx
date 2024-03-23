@@ -3,13 +3,13 @@ import { Button } from 'antd';
 import { AimOutlined } from '@ant-design/icons';
 import './grid.css';
 
-const GeoLocation = () => {
+const GeoLocation = ({ onLocationChange }) => {
   const handleGetLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
-        alert(`Your current location is: Latitude ${latitude}, Longitude ${longitude}`);
+        onLocationChange(latitude, longitude);
       }, (error) => {
         console.error(error.message);
         alert('Failed to retrieve location. Please enable location services.');

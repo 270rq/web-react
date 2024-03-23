@@ -143,20 +143,21 @@ const GridTable = () => {
       
 <Card className="card-weather-hourly" size='small' title={<div className="font card-title">Почасовая погода</div>}>
   <div className='card-weather-hourly-container'>
-    {[...Array(5)].map((_, index) =>{
+    {[...Array(5)].map((_, index) => {
       const curHour = new Date().getHours();
-       const nextHour = (curHour + index) % 24;
+      const nextHour = (curHour + index + 1) % 24; // Начинаем с часа после текущего часа
       return (
-      <Card className="hourly-card" key={index}>
-      <Row gutter={[16, 8]} align="center" style={{display: 'flex', flexDirection:'column'}}>
-      <div className="font hourly-card-content hourly-card-content-time"> {nextHour}:00</div>
-        <img src={arow_wind} alt={`Погода ${index + 1}`} />
-        <div className="font hourly-card-content hourly-card-content-temperature">20°C</div>
-        <img src={arow_wind} alt={`Ветер ${index + 1}`} />
-        <div className="font hourly-card-content hourly-card-content-wind">3m/s</div>
-      </Row>
-    </Card>
-    )})}
+        <Card className="hourly-card" key={index}>
+          <Row gutter={[16, 8]} align="center" style={{ display: 'flex', flexDirection: 'column' }}>
+            <div className="font hourly-card-content hourly-card-content-time"> {nextHour}:00</div>
+            <img src={arow_wind} alt={`Погода ${index + 1}`} />
+            <div className="font hourly-card-content hourly-card-content-temperature">20°C</div>
+            <img src={arow_wind} alt={`Ветер ${index + 1}`} />
+            <div className="font hourly-card-content hourly-card-content-wind">3m/s</div>
+          </Row>
+        </Card>
+      );
+    })}
   </div>
 </Card>
     

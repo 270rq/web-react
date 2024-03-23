@@ -9,6 +9,24 @@ class CurrentDateTime extends React.Component {
     };
   }
 
+  componentDidMount() {
+    this.timerID = setInterval(
+      () => this.tick(),
+      60000 // Обновление времени каждую минуту (60000 миллисекунд)
+    );
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
+  tick() {
+    this.setState({
+      currentTime: this.getCurrentTime(),
+      currentDate: this.getCurrentDate()
+    });
+  }
+
   getCurrentTime = () => {
     const now = new Date();
     const hours = now.getHours().toString().padStart(2, '0');

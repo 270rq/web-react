@@ -6,6 +6,7 @@ import tshirt from '../icon/tshirt.svg';
 import shower from '../icon/shower.svg';
 import window from '../icon/window.svg';
 import bisicle from '../icon/bisicle.svg';
+import tree from '../icon/club-svgrepo-com.svg'
 
 const GridMapTable = () => {
   const recommendations = [
@@ -25,7 +26,9 @@ const GridMapTable = () => {
                     <span>{rec.text}</span>
                   </div>
                 ))}>
-                  <button style={{ border: 'none', background: 'none', cursor: 'pointer', padding: '0' }}>рекомендации</button>
+                 <button style={{ border: 'none', background: 'none', cursor: 'pointer', padding: '0' }}>
+  <img src={tree} alt="Tree Icon" style={{ width: '24px', height: '24px' }} />
+</button>
                 </Tooltip>
     
     </>

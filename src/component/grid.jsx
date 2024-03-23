@@ -1,8 +1,7 @@
-import React, {useEffect , useState} from 'react';
-import { Row, Card, Col, Space} from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Row, Card, Col, Space } from 'antd';
 import './grid.css';
 import './font.css';
-import CurrentDateTime from '../component/time';
 import arow_wind from '../icon/arow-wind.svg';
 import weather_description from '../weather3d/01_sunny_color.svg';
 import sunrise from '../icon/sunrise-svgrepo-com.svg';
@@ -11,30 +10,48 @@ import humidity from '../icon/water-svgrepo-com.svg';
 import wind_speed from '../icon/wind-svgrepo-com.svg';
 import pressure from '../icon/gauge-high-svgrepo-com.svg';
 import uv from '../icon/uv-index.svg';
-
+import CurrentDateTime from '../component/time';
 
 const GridTable = () => {
-  const [fiveDays,setFiveDays] = useState();
+  const [weatherData, setWeatherData] = useState(null);
+  const [fiveDays, setFiveDays] = useState(null);
+
   useEffect(() => {
-  const generateDaysOfWeek = () => {
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const today = new Date().getDay(); // Получаем сегодняшний день недели (0 - воскресенье, 1 - понедельник, и т.д.)
-    const daysFromTomorrow = days.slice(today + 1, today + 6); // Начиная с завтрашнего дня
+    const fetchWeatherData = async () => {
+      try {
+        // Здесь делаем запрос к API для получения данных о погоде на текущую дату
+        const response = await fetch('YOUR_API_ENDPOINT');
+        const data = await response.json();
+        setWeatherData(data);
+      } catch (error) {
+        console.error('Error fetching weather data: ', error);
+      }
+    };
 
-    return daysFromTomorrow.map((day, index) => {
-      const currentDate = new Date();
-      const nextDay = new Date(currentDate.getTime() + (index + 1) * 24 * 60 * 60 * 1000); // Добавляем дни к текущей дате
-      const dayOfWeek = day;
-      const date = nextDay.getDate();
-      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-      const month = monthNames[nextDay.getMonth()];
+    fetchWeatherData();
 
-      return { dayOfWeek, date: `${date} ${month}` };
-    });
-  };
-  console.log(generateDaysOfWeek);
-  setFiveDays(generateDaysOfWeek);
-  }, [])
+    const generateDaysOfWeek = () => {
+      const days = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+      const today = new Date().getDay(); // Получаем сегодняшний день недели (0 - воскресенье, 1 - понедельник, и т.д.)
+      const daysFromTomorrow = days.slice(today + 1, today + 6); // Начиная с завтрашнего дня
+
+      return daysFromTomorrow.map((day, index) => {
+        const currentDate = new Date();
+        const nextDay = new Date(currentDate.getTime() + (index + 1) * 24 * 60 * 60 * 1000); // Добавляем дни к текущей дате
+        const dayOfWeek = day;
+        const date = nextDay.getDate();
+        const monthNames = ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"];
+        const month = monthNames[nextDay.getMonth()];
+
+        return { dayOfWeek, date: `${date} ${month}` };
+      });
+    };
+    
+    const daysOfWeek = generateDaysOfWeek();
+    setFiveDays(daysOfWeek);
+
+  }, []);
+
   return(
   
   <div className="grid-table-container">

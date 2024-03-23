@@ -65,7 +65,6 @@ const Main = () => {
                 flexShrink: "0",
               }}
             />
-            <span>Menu</span>
             <SearchCity />
             <GeoLocation />
           </div>  

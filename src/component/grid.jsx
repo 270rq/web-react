@@ -11,6 +11,7 @@ import wind_speed from '../icon/wind-svgrepo-com.svg';
 import pressure from '../icon/gauge-high-svgrepo-com.svg';
 import uv from '../icon/uv-index.svg';
 import CurrentDateTime from '../component/time';
+import axios from 'axios';
 
 const GridTable = () => {
   const [weatherData, setWeatherData] = useState(null);
@@ -19,10 +20,8 @@ const GridTable = () => {
   useEffect(() => {
     const fetchWeatherData = async () => {
       try {
-        // Здесь делаем запрос к API для получения данных о погоде на текущую дату
-        const response = await fetch('YOUR_API_ENDPOINT');
-        const data = await response.json();
-        setWeatherData(data);
+        const response = await axios.get('http://localhost:3000/api/menu/411/2024-03-24'); // Используем Axios для выполнения GET запроса
+        setWeatherData(response.data);
       } catch (error) {
         console.error('Error fetching weather data: ', error);
       }

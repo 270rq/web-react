@@ -65,7 +65,7 @@ const GridTable = () => {
     <div className='time-weather-complain'>
     <Card className="detail-card detail-card-temp " style={{ marginRight: '16px' }}>
   <Col className='detail-card-column' gutter={[16, 8]}>
-    <div className="font detail-card-content detail-card-temperature">{weatherData.temperature}°C</div>
+    <div className="font detail-card-content detail-card-temperature">°C</div>
     <div className="sun-content">
       <div className="sunrise-content">
         <img className="sunrise-icon" src={sunrise} alt={`Иконка восхода`} />

@@ -15,40 +15,40 @@ import axios from 'axios';
 
 const GridTable = () => {
   const [weatherData, setWeatherData] = useState(null);
-  const [fiveDays, setFiveDays] = useState(null);
+  const [fiveDays, setFiveDays] = useState([]);
 
   useEffect(() => {
-    const fetchWeatherData = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/menu/411/2024-03-24'); // Используем Axios для выполнения GET запроса
+        const response = await axios.get('http://localhost:3000/api/menu/Калужская область/Киров/2024-03-24T13%3A54%3A35.478Z');
         setWeatherData(response.data);
+
+        const generateDaysOfWeek = () => {
+          const days = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+          const today = new Date().getDay();
+          const daysFromTomorrow = days.slice(today + 1, today + 6);
+
+          return daysFromTomorrow.map((day, index) => {
+            const currentDate = new Date();
+            const nextDay = new Date(currentDate.getTime() + (index + 1) * 24 * 60 * 60 * 1000);
+            const dayOfWeek = day;
+            const date = nextDay.getDate();
+            const monthNames = ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"];
+            const month = monthNames[nextDay.getMonth()];
+
+            return { dayOfWeek, date: `${date} ${month}` };
+          });
+        };
+
+        const daysOfWeek = generateDaysOfWeek();
+        setFiveDays(daysOfWeek);
+
       } catch (error) {
         console.error('Error fetching weather data: ', error);
       }
     };
 
-    fetchWeatherData();
-
-    const generateDaysOfWeek = () => {
-      const days = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
-      const today = new Date().getDay(); // Получаем сегодняшний день недели (0 - воскресенье, 1 - понедельник, и т.д.)
-      const daysFromTomorrow = days.slice(today + 1, today + 6); // Начиная с завтрашнего дня
-
-      return daysFromTomorrow.map((day, index) => {
-        const currentDate = new Date();
-        const nextDay = new Date(currentDate.getTime() + (index + 1) * 24 * 60 * 60 * 1000); // Добавляем дни к текущей дате
-        const dayOfWeek = day;
-        const date = nextDay.getDate();
-        const monthNames = ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"];
-        const month = monthNames[nextDay.getMonth()];
-
-        return { dayOfWeek, date: `${date} ${month}` };
-      });
-    };
-    
-    const daysOfWeek = generateDaysOfWeek();
-    setFiveDays(daysOfWeek);
-
+    fetchData();
   }, []);
 
   return(
@@ -60,13 +60,12 @@ const GridTable = () => {
   <div className="font city-name">Athens</div>
   <CurrentDateTime />
   </Card>
-      
   <Card className="card-weather-detail">
   <Row className='card-weather-detail-container' flexDirection="row">
     <div className='time-weather-complain'>
     <Card className="detail-card detail-card-temp " style={{ marginRight: '16px' }}>
   <Col className='detail-card-column' gutter={[16, 8]}>
-    <div className="font detail-card-content detail-card-temperature">24°C</div>
+    <div className="font detail-card-content detail-card-temperature">{weatherData.temperature}°C</div>
     <div className="sun-content">
       <div className="sunrise-content">
         <img className="sunrise-icon" src={sunrise} alt={`Иконка восхода`} />
@@ -96,7 +95,7 @@ const GridTable = () => {
           <Row>
           <div className='detail-content'>
             <img className="humidity-icon" src={humidity} alt={`Иконка влажности`} />
-            <p className="font humidity-text">41%</p>
+            <p className="font humidity-text">%</p>
   <p className="font humidity-label">Влажность</p>
           </div>
           <div className='detail-content'>

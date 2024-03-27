@@ -20,14 +20,41 @@ const GridTable = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/menu/Калужская область/Киров/2024-03-24T13%3A54%3A35.478Z');
+        const currentTime = new Date().toISOString();
+        const encodedCurrentTime = encodeURIComponent(currentTime);
+        // const url = `http://localhost:3000/api/menu/${region}/${city}/${encodedCurrentTime}`;
+        const url = `http://localhost:3000/api/menu/Калужская область/Киров/2024-03-24T13:54:35.478Z`;
+        
+        const response = await axios.get(url);
         setWeatherData(response.data);
 
+        // Получение значений из объекта response.data
+        if (response.data && response.data.length > 0) {
+          const weatherData = response.data[0];
+          const temperature = weatherData.temperature !== undefined ? weatherData.temperature : 'N/A';
+          const humidity = weatherData.humidity !== undefined ? weatherData.humidity : 'N/A';
+          const uv = weatherData.uv !== undefined ? weatherData.uv : 'N/A';
+          const windSpeed = weatherData.windSpeed !== undefined ? weatherData.windSpeed : 'N/A';
+          const windType = weatherData.windType !== undefined ? weatherData.windType : 'N/A';
+          const pressure = weatherData.pressure !== undefined ? weatherData.pressure : 'N/A';
+          const weatherType = weatherData.weatherType !== undefined ? weatherData.weatherType : 'N/A';
+
+          console.log("Temperature:", temperature);
+          console.log("Humidity:", humidity);
+          console.log("UV:", uv);
+          console.log("Wind Speed:", windSpeed);
+          console.log("Wind Type:", windType);
+          console.log("Pressure:", pressure);
+          console.log("Weather Type:", weatherType);
+        } else {
+          console.log('Данные не получены или имеют неправильный формат');
+        }
+  
         const generateDaysOfWeek = () => {
           const days = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
           const today = new Date().getDay();
           const daysFromTomorrow = days.slice(today + 1, today + 6);
-
+  
           return daysFromTomorrow.map((day, index) => {
             const currentDate = new Date();
             const nextDay = new Date(currentDate.getTime() + (index + 1) * 24 * 60 * 60 * 1000);
@@ -35,19 +62,19 @@ const GridTable = () => {
             const date = nextDay.getDate();
             const monthNames = ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"];
             const month = monthNames[nextDay.getMonth()];
-
+  
             return { dayOfWeek, date: `${date} ${month}` };
           });
         };
-
+  
         const daysOfWeek = generateDaysOfWeek();
         setFiveDays(daysOfWeek);
-
+  
       } catch (error) {
         console.error('Error fetching weather data: ', error);
       }
     };
-
+  
     fetchData();
   }, []);
 
@@ -65,7 +92,7 @@ const GridTable = () => {
     <div className='time-weather-complain'>
     <Card className="detail-card detail-card-temp " style={{ marginRight: '16px' }}>
   <Col className='detail-card-column' gutter={[16, 8]}>
-    <div className="font detail-card-content detail-card-temperature">°C</div>
+    <div className="font detail-card-content detail-card-temperature">{}°C</div>
     <div className="sun-content">
       <div className="sunrise-content">
         <img className="sunrise-icon" src={sunrise} alt={`Иконка восхода`} />

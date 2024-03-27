@@ -20,7 +20,7 @@ const Login = ({onLogin}) => {
       localStorage.setItem('id', id);
       localStorage.setItem('token', token);
       localStorage.setItem('obtained', new Date().toDateString()) 
-      alert("Uhu вы вошли")
+      alert("Ура! Вы вошли")
       onLogin();
     }
     else{
@@ -53,7 +53,7 @@ password: password,
       onLogin();
     }
     else{
-      alert("Что то не так")
+      alert("Что-то пошло не так")
     }
   }
     catch (e){
@@ -72,17 +72,17 @@ console.log(e)
     autoComplete="off"
   >
     <Form.Item
-      label="Username"
+      label="Логин"
       name="username"
-      rules={[{ required: true, message: 'Please input your username!' }]}
+      rules={[{ required: true, message: 'Пожалуйста, введите свой логин!' }]}
     >
       <Input />
     </Form.Item>
 
     <Form.Item
-      label="Password"
+      label="Пароль"
       name="password"
-      rules={[{ required: true, message: 'Please input your password!' }]}
+      rules={[{ required: true, message: 'Пожалуйста, введите свой пароль!' }]}
     >
       <Input.Password />
     </Form.Item>
@@ -92,7 +92,7 @@ console.log(e)
       valuePropName="checked"
       wrapperCol={{ offset: 8, span: 16 }}
     >
-      <Checkbox>Remember me</Checkbox>
+      <Checkbox>Запомнить меня</Checkbox>
     </Form.Item>
 
     <Form.Item wrapperCol={{ offset: 3, span: 16 }}>
@@ -100,7 +100,7 @@ console.log(e)
       <Button type="primary" htmlType="submit">
         Войти
       </Button>
-      <Button htmlType="button" onClick={signUp}>зарегистрироваться</Button></Space>
+      <Button htmlType="button" onClick={signUp}>Зарегистрироваться</Button></Space>
     </Form.Item>
   </Form>
 };

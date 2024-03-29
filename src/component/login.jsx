@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Checkbox, Form, Input, Space } from 'antd';
+import { Button, Checkbox, Form, Input, Space, message } from 'antd';
 import axios from "axios";
 
 const Login = ({onLogin}) => {
@@ -20,11 +20,11 @@ const Login = ({onLogin}) => {
       localStorage.setItem('id', id);
       localStorage.setItem('token', token);
       localStorage.setItem('obtained', new Date().toDateString()) 
-      alert("Ура! Вы вошли")
+      message.success("Ура! Вы вошли")
       onLogin();
     }
     else{
-      alert("Неправильный логин или пароль")
+      message.error("Неправильный логин или пароль")
     }}
     catch (e){
       console.log(e)  
@@ -53,7 +53,7 @@ password: password,
       onLogin();
     }
     else{
-      alert("Что-то пошло не так")
+      message.error("Что-то пошло не так")
     }
   }
     catch (e){

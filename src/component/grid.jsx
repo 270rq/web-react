@@ -13,78 +13,63 @@ import uv from '../icon/uv-index.svg';
 import CurrentDateTime from '../component/time';
 import axios from 'axios';
 
+
 const GridTable = () => {
-  const [weatherData, setWeatherData] = useState(null);
+  const [weatherData, setWeatherData] = useState([]);
+  const [sunData, setSunData] = useState([]);
   const [fiveDays, setFiveDays] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const currentTime = new Date().toISOString();
-        const encodedCurrentTime = encodeURIComponent(currentTime);
-        // const url = `http://localhost:3000/api/menu/${region}/${city}/${encodedCurrentTime}`;
-        const url = `http://localhost:3000/api/menu/Калужская область/Киров/2024-03-24T13:54:35.478Z`;
+        const weatherUrl = `http://localhost:3000/api/menu/Калужская область/Киров/2024-03-24T13:54:35.478Z`;
+        const sunUrl = `http://localhost:3000/api/sun`;
+
+        const responseWeather = await axios.get(weatherUrl);
+        setWeatherData(responseWeather.data);
+        console.log(responseWeather.data)
+
         
-        const response = await axios.get(url);
-        setWeatherData(response.data);
+        const responseSun = await axios.get(sunUrl);
+        setSunData(responseSun.data);
 
-        // Получение значений из объекта response.data
-        if (response.data && response.data.length > 0) {
-          const weatherData = response.data[0];
-          const temperature = weatherData.temperature !== undefined ? weatherData.temperature : 'N/A';
-          const humidity = weatherData.humidity !== undefined ? weatherData.humidity : 'N/A';
-          const uv = weatherData.uv !== undefined ? weatherData.uv : 'N/A';
-          const windSpeed = weatherData.windSpeed !== undefined ? weatherData.windSpeed : 'N/A';
-          const windType = weatherData.windType !== undefined ? weatherData.windType : 'N/A';
-          const pressure = weatherData.pressure !== undefined ? weatherData.pressure : 'N/A';
-          const weatherType = weatherData.weatherType !== undefined ? weatherData.weatherType : 'N/A';
-
-          console.log("Temperature:", temperature);
-          console.log("Humidity:", humidity);
-          console.log("UV:", uv);
-          console.log("Wind Speed:", windSpeed);
-          console.log("Wind Type:", windType);
-          console.log("Pressure:", pressure);
-          console.log("Weather Type:", weatherType);
-        } else {
-          console.log('Данные не получены или имеют неправильный формат');
-        }
-  
-        const generateDaysOfWeek = () => {
-          const days = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
-          const today = new Date().getDay();
-          const daysFromTomorrow = days.slice(today + 1, today + 6);
-  
-          return daysFromTomorrow.map((day, index) => {
-            const currentDate = new Date();
-            const nextDay = new Date(currentDate.getTime() + (index + 1) * 24 * 60 * 60 * 1000);
-            const dayOfWeek = day;
-            const date = nextDay.getDate();
-            const monthNames = ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"];
-            const month = monthNames[nextDay.getMonth()];
-  
-            return { dayOfWeek, date: `${date} ${month}` };
-          });
-        };
-  
         const daysOfWeek = generateDaysOfWeek();
         setFiveDays(daysOfWeek);
-  
       } catch (error) {
-        console.error('Error fetching weather data: ', error);
+        console.error('Error fetching data:', error);
+        
       }
     };
-  
+
+    const generateDaysOfWeek = () => {
+      const days = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+      const today = new Date().getDay();
+      const daysFromTomorrow = days.slice(today + 1, today + 6);
+
+      return daysFromTomorrow.map((day, index) => {
+        const currentDate = new Date();
+        const nextDay = new Date(currentDate.getTime() + (index + 1) * 24 * 60 * 60 * 1000);
+        const dayOfWeek = day;
+        const date = `${nextDay.getDate()} ${getMonthName(nextDay.getMonth())}`;
+        return { dayOfWeek, date };
+      });
+    };
+
+    const getMonthName = (monthIndex) => {
+      const monthNames = ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"];
+      return monthNames[monthIndex];
+    };
+
     fetchData();
   }, []);
-
   return(
-  
   <div className="grid-table-container">
     <Row gutter={[8, 16]} style={{marginBottom:"1rem", justifyContent:"center"}}>
       
     <Card className="card-weather-t">
-  <div className="font city-name">Athens</div>
+  <div className="font city-name">
+    {/* {weatherData[0].city??""} */}
+    </div>
   <CurrentDateTime />
   </Card>
   <Card className="card-weather-detail">
@@ -92,20 +77,26 @@ const GridTable = () => {
     <div className='time-weather-complain'>
     <Card className="detail-card detail-card-temp " style={{ marginRight: '16px' }}>
   <Col className='detail-card-column' gutter={[16, 8]}>
-    <div className="font detail-card-content detail-card-temperature">{}°C</div>
+    <div className="font detail-card-content detail-card-temperature">
+      {/* {weatherData[0].temperature??""} */}
+      °C</div>
     <div className="sun-content">
       <div className="sunrise-content">
         <img className="sunrise-icon" src={sunrise} alt={`Иконка восхода`} />
         <div className="sunrise-time">
           <p className="font sunrise-label">Восход</p>
-          <p className="font sunrise-time-text">06:37</p>
+          <p className="font sunrise-time-text">
+            {/* {sunData[0].sunrise??""} */}
+            </p>
         </div>
       </div>
       <div className="sunset-content">
         <img className="sunset-icon" src={sunset} alt={`Иконка захода`} />
         <div className="sunset-time">
           <p className="font sunset-label">Заход</p>
-          <p className="font sunset-time-text">16:37</p>
+          <p className="font sunset-time-text">
+            {/* {sunData[0].sunset??""} */}
+            </p>
         </div>
       </div>
     </div>
@@ -114,7 +105,9 @@ const GridTable = () => {
     <Card className="detail-card detail-card-weather" style={{ marginRight: '16px' }}>
       <Col className='weather-description' gutter={[16, 8]}>
         <img src={weather_description} alt={`Погода`}/>
-        <div className="font detail-card-content detail-card-description">Солнечно</div>
+        <div className="font detail-card-content detail-card-description">
+          {/* {weatherData[0].weatherType} */}
+          </div>
       </Col>
     </Card></div>
     <Card className="detail-card detail-card-param">
@@ -122,7 +115,9 @@ const GridTable = () => {
           <Row>
           <div className='detail-content'>
             <img className="humidity-icon" src={humidity} alt={`Иконка влажности`} />
-            <p className="font humidity-text">%</p>
+            <p className="font humidity-text">
+              {/* {weatherData[0].humidity??""} */}
+              %</p>
   <p className="font humidity-label">Влажность</p>
           </div>
           <div className='detail-content'>
@@ -134,12 +129,16 @@ const GridTable = () => {
           <Row>
           <div className='detail-content'>
             <img className="pressure-icon" src={pressure} alt={`Иконка давления`} />
-            <p className="font pressure-text">988</p>
+            <p className="font pressure-text">
+              {/* {weatherData[0].pressure??""} */}
+              </p>
   <p className="font pressure-label">Давление</p>
-          </div>
+          </div> 
           <div className='detail-content'>
             <img className="uv-icon" src={uv} alt={`Иконка uv`} />
-            <p className="font uv-text">8</p>
+            <p className="font uv-text">
+              {/* {weatherData[0].uv??""} */}
+            </p>
   <p className="font uv-label">UV</p>
           </div>
           </Row>
@@ -170,7 +169,7 @@ const GridTable = () => {
   <div className='card-weather-hourly-container'>
     {[...Array(5)].map((_, index) => {
       const curHour = new Date().getHours();
-      const nextHour = (curHour + index + 1) % 24; // Начинаем с часа после текущего часа
+      const nextHour = (curHour + index + 1) % 24;
       return (
         <Card className="hourly-card" key={index}>
           <Row gutter={[16, 8]} align="center" style={{ display: 'flex', flexDirection: 'column' }}>

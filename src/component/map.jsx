@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { YMaps, Map, Placemark, RoutePanel } from '@pbe/react-yandex-maps';
 import { Cascader, Slider, Form, Button } from 'antd';
+import GridMapTable from './infornation';
 import axios from 'axios';
 
 const MapComponent = () => {
@@ -37,8 +38,9 @@ const MapComponent = () => {
 
   const handleAllergenChange = async (value, hour) => {
     setSelectedAllergen(value);
+    const currentDate = new Date(); // Get current date
     try {
-      const response = await axios.get(`http://your-api-url/geyByFlowerAndTime?flowerId=${value[1]}&hour=${hour}`);
+      const response = await axios.get(`http://localhost:3000/api/map/flower/1?date=2024-03-24T06%3A58%3A45.742Z`);
       if (response.data) {
         const allergenData = response.data;
         const newMarkers = allergenData.map((item) => ({
@@ -48,7 +50,7 @@ const MapComponent = () => {
             balloonContent: item.description,
           },
         }));
-        setMarkers(newMarkers);
+        setMarkers(newMarkers); // Update markers on the map
       }
     } catch (error) {
       console.error("Error fetching allergen data:", error.message);
@@ -95,7 +97,10 @@ const MapComponent = () => {
           ))}
           <RoutePanel visible={true} destination={[55.751574, 37.573856]} />
           
-          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', padding: '20px', borderRadius: '5px' }}>
+          <div style={{ position: 'absolute', top: '70%', left: '10%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', padding: '20px', borderRadius: '5px' ,zIndex: 999 }}>
+          <div className="grid-map-table-container" style={{position: 'absolute', top: '10%', left: '10%'}}>
+        <GridMapTable />
+      </div>
             <Form onFinish={handleFormSubmit} style={{ width: '200px' }}>
               <Form.Item name="TreeSelect" label="Аллерген" rules={[{ required: true, message: 'Пожалуйста, выберите аллерген!' }]}>
                 <Cascader

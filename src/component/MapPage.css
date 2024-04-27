@@ -12,6 +12,8 @@
 .map-component-container {
   flex: 1;
   position: relative;
+  width: 100%;
+  overflow: hidden;
 }
 
 .map-wrapper {

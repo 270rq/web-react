@@ -1,193 +1,344 @@
-import React, { useEffect, useState } from 'react';
-import { Row, Card, Col, Space } from 'antd';
-import './grid.css';
-import './font.css';
-import arow_wind from '../icon/arow-wind.svg';
-import weather_description from '../weather3d/01_sunny_color.svg';
-import sunrise from '../icon/sunrise-svgrepo-com.svg';
-import sunset from '../icon/sunset-svgrepo-com.svg';
-import humidity from '../icon/water-svgrepo-com.svg';
-import wind_speed from '../icon/wind-svgrepo-com.svg';
-import pressure from '../icon/gauge-high-svgrepo-com.svg';
-import uv from '../icon/uv-index.svg';
-import CurrentDateTime from '../component/time';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import { Row, Card, Col, Space } from "antd";
+import "./grid.css";
+import "./font.css";
+import arow_wind from "../icon/arow-wind.svg";
+import sunrise from "../icon/sunrise-svgrepo-com.svg";
+import sunset from "../icon/sunset-svgrepo-com.svg";
+import humidity from "../icon/water-svgrepo-com.svg";
+import wind_speed from "../icon/wind-svgrepo-com.svg";
+import pressure from "../icon/gauge-high-svgrepo-com.svg";
+import uv from "../icon/uv-index.svg";
+import CurrentDateTime from "../component/time";
+import axios from "axios";
+import iconMappings from "./icon";
+import { getWindRotationAngle } from "./windArrow";
 
-
-const GridTable = () => {
-  const [weatherData, setWeatherData] = useState([]);
-  const [sunData, setSunData] = useState([]);
+const GridTable = ({ city, region }) => {
+  const [hourlyData, setHourlyData] = useState([]);
+  const [sunData, setSunData] = useState({});
+  const [curMenu, setCurMenu] = useState({});
   const [fiveDays, setFiveDays] = useState([]);
 
+  function groupMenuByDay(menus) {
+    const groupedDates = {};
+
+    menus.forEach((menu) => {
+      // Преобразуем дату в формат 'YYYY-MM-DD' (без времени), чтобы использовать как ключ
+      const formattedDate = new Date(menu.date).toISOString().split("T")[0]; // Получаем 'YYYY-MM-DD'
+
+      // Если ключа для этой даты еще нет, создаем новый массив
+      if (!groupedDates[formattedDate]) {
+        groupedDates[formattedDate] = [];
+      }
+
+      // Добавляем текущую дату в массив для соответствующего ключа (дня)
+      groupedDates[formattedDate].push(menu);
+    });
+
+    return groupedDates;
+  }
+
+  const months = [
+    "января",
+    "февраля",
+    "марта",
+    "апреля",
+    "мая",
+    "июня",
+    "июля",
+    "августа",
+    "сентября",
+    "октября",
+    "ноября",
+    "декабря",
+  ];
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const weatherUrl = `http://localhost:3000/api/menu/Калужская область/Киров/2024-03-24T13:54:35.478Z`;
-        const sunUrl = `http://localhost:3000/api/sun`;
+        const weatherUrl = `http://localhost:3000/api/menu/getWeather/${region}/${city}/2024-04-20T13:54:35.478Z`;
 
         const responseWeather = await axios.get(weatherUrl);
-        setWeatherData(responseWeather.data);
-        console.log(responseWeather.data)
+        console.log(responseWeather.data);
+        if (responseWeather.data.menuData.city) {
+          let currentMenu = responseWeather.data.menuData.data[0];
+          let time =
+            new Date().getTime() -
+            new Date(responseWeather.data.menuData.data[0].date).getTime();
+          time = Math.abs(time);
+          responseWeather.data.menuData.data.forEach((menu) => {
+            const curTime =
+              new Date().getTime() - new Date(menu.date).getTime();
+            currentMenu = time > Math.abs(curTime) ? menu : currentMenu;
+            time = time > Math.abs(curTime) ? curTime : time;
+          });
+          setCurMenu(currentMenu);
+        } else {
+          setCurMenu({});
+        }
+        setSunData(responseWeather.data.sunData[0] || []);
+        setHourlyData(responseWeather.data.weatherForFiveHours);
+        // Группируем данные по дням
+        const fiveDaysObject = groupMenuByDay(
+          responseWeather.data.weatherForFiveDays
+        );
 
-        
-        const responseSun = await axios.get(sunUrl);
-        setSunData(responseSun.data);
+        // Создаем массив для хранения данных по дням
+        const daysArray = [];
 
-        const daysOfWeek = generateDaysOfWeek();
-        setFiveDays(daysOfWeek);
+        // Получаем ключи (даты) из объекта пяти дней
+        const fiveDaysKeys = Object.keys(fiveDaysObject);
+
+        // Проходимся по каждой дате
+        fiveDaysKeys.forEach((key) => {
+          let day = fiveDaysObject[key][0]; // Берем первый элемент из массива данных для текущей даты
+          let date = new Date(key); // Создаем объект Date из текущей даты
+          date.setHours(12, 0, 0); // Устанавливаем время 12:00 для текущей даты
+
+          // Если есть данные для текущей даты, выбираем наиболее релевантные
+          if (fiveDaysObject[key].length > 1) {
+            let index = Math.abs(
+              date.getMinutes() -
+                new Date(fiveDaysObject[key][0].date).getMinutes()
+            ); // Вычисляем разницу времени с первым элементом
+
+            // Проходимся по каждому элементу для текущей даты
+            fiveDaysObject[key].forEach((el) => {
+              const curIndex = Math.abs(
+                date.getMinutes() - new Date(el.date).getMinutes()
+              ); // Вычисляем разницу времени с текущим элементом
+              // Если текущий элемент более релевантен, обновляем данные
+              if (index < curIndex) {
+                index = curIndex;
+                day = el;
+              }
+            });
+          }
+          daysArray.push(day); // Добавляем выбранный элемент в массив данных для дня
+        });
+        setFiveDays(daysArray);
       } catch (error) {
-        console.error('Error fetching data:', error);
-        
+        console.error("Error fetching data:", error);
       }
     };
 
-    const generateDaysOfWeek = () => {
-      const days = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
-      const today = new Date().getDay();
-      const daysFromTomorrow = days.slice(today + 1, today + 6);
-
-      return daysFromTomorrow.map((day, index) => {
-        const currentDate = new Date();
-        const nextDay = new Date(currentDate.getTime() + (index + 1) * 24 * 60 * 60 * 1000);
-        const dayOfWeek = day;
-        const date = `${nextDay.getDate()} ${getMonthName(nextDay.getMonth())}`;
-        return { dayOfWeek, date };
-      });
-    };
-
-    const getMonthName = (monthIndex) => {
-      const monthNames = ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"];
-      return monthNames[monthIndex];
-    };
-
     fetchData();
-  }, []);
-  return(
-  <div className="grid-table-container">
-    <Row gutter={[8, 16]} style={{marginBottom:"1rem", justifyContent:"center"}}>
-      
-    <Card className="card-weather-t">
-  <div className="font city-name">
-    {/* {weatherData[0].city??""} */}
-    </div>
-  <CurrentDateTime />
-  </Card>
-  <Card className="card-weather-detail">
-  <Row className='card-weather-detail-container' flexDirection="row">
-    <div className='time-weather-complain'>
-    <Card className="detail-card detail-card-temp " style={{ marginRight: '16px' }}>
-  <Col className='detail-card-column' gutter={[16, 8]}>
-    <div className="font detail-card-content detail-card-temperature">
-      {/* {weatherData[0].temperature??""} */}
-      °C</div>
-    <div className="sun-content">
-      <div className="sunrise-content">
-        <img className="sunrise-icon" src={sunrise} alt={`Иконка восхода`} />
-        <div className="sunrise-time">
-          <p className="font sunrise-label">Восход</p>
-          <p className="font sunrise-time-text">
-            {/* {sunData[0].sunrise??""} */}
-            </p>
-        </div>
-      </div>
-      <div className="sunset-content">
-        <img className="sunset-icon" src={sunset} alt={`Иконка захода`} />
-        <div className="sunset-time">
-          <p className="font sunset-label">Заход</p>
-          <p className="font sunset-time-text">
-            {/* {sunData[0].sunset??""} */}
-            </p>
-        </div>
-      </div>
-    </div>
-  </Col>
-</Card>
-    <Card className="detail-card detail-card-weather" style={{ marginRight: '16px' }}>
-      <Col className='weather-description' gutter={[16, 8]}>
-        <img src={weather_description} alt={`Погода`}/>
-        <div className="font detail-card-content detail-card-description">
-          {/* {weatherData[0].weatherType} */}
+  }, [city, region]);
+  return (
+    <div className="grid-table-container">
+      <Row
+        gutter={[8, 16]}
+        style={{ marginBottom: "1rem", justifyContent: "center" }}
+      >
+        <Card className="card-weather-t">
+          <div className="font city-name">
+            {region} {city}
           </div>
-      </Col>
-    </Card></div>
-    <Card className="detail-card detail-card-param">
-        <Col className='all-detail-content'>
-          <Row>
-          <div className='detail-content'>
-            <img className="humidity-icon" src={humidity} alt={`Иконка влажности`} />
-            <p className="font humidity-text">
-              {/* {weatherData[0].humidity??""} */}
-              %</p>
-  <p className="font humidity-label">Влажность</p>
-          </div>
-          <div className='detail-content'>
-            <img className="wind-speed-icon" src={wind_speed} alt={`Иконка скорсоти ветра`} />
-            <p className="font wind-speed-text">2km/h</p>
-  <p className="font wind-speed-label">Скорость ветра</p>
-          </div>
-          </Row>
-          <Row>
-          <div className='detail-content'>
-            <img className="pressure-icon" src={pressure} alt={`Иконка давления`} />
-            <p className="font pressure-text">
-              {/* {weatherData[0].pressure??""} */}
-              </p>
-  <p className="font pressure-label">Давление</p>
-          </div> 
-          <div className='detail-content'>
-            <img className="uv-icon" src={uv} alt={`Иконка uv`} />
-            <p className="font uv-text">
-              {/* {weatherData[0].uv??""} */}
-            </p>
-  <p className="font uv-label">UV</p>
-          </div>
-          </Row>
-        </Col>
-    </Card>
-  </Row>
-</Card>
-      
-    </Row>
-    <Row gutter={[8, 16]} style={{ justifyContent:"center"}}>
-    
-    <Card className="card-weather-5-days" size='small' style={{background:"some"}}  title={<div className="font card-title">Погода на 5 дней</div>}>
-  <Row gutter={[1, 2]} style={{ flexDirection: 'column', justifyContent: "space-between", height:"100%" }}>
-   {fiveDays && fiveDays.map((day, index) => (
-  <Row className="card-weather-5-days-row" gutter={[4, 4]} key={index}>
-    <Space size={100}>
-      <img className="card-weather-5-days-icon" src={arow_wind} alt={`Погода`} />
-      <div className="font card-weather-5-days-temperature">20°C</div>
-      <div>{day.dayOfWeek}, {day.date}</div>
-    </Space>
-  </Row>
-))}
-  </Row>
-</Card>
-      
-      
-<Card className="card-weather-hourly" size='small' title={<div className="font card-title">Почасовая погода</div>}>
-  <div className='card-weather-hourly-container'>
-    {[...Array(5)].map((_, index) => {
-      const curHour = new Date().getHours();
-      const nextHour = (curHour + index + 1) % 24;
-      return (
-        <Card className="hourly-card" key={index}>
-          <Row gutter={[16, 8]} align="center" style={{ display: 'flex', flexDirection: 'column' }}>
-            <div className="font hourly-card-content hourly-card-content-time"> {nextHour}:00</div>
-            <img src={arow_wind} alt={`Погода ${index + 1}`} />
-            <div className="font hourly-card-content hourly-card-content-temperature">20°C</div>
-            <img src={arow_wind} alt={`Ветер ${index + 1}`} />
-            <div className="font hourly-card-content hourly-card-content-wind">3m/s</div>
+          <CurrentDateTime />
+        </Card>
+        <Card className="card-weather-detail">
+          <Row className="card-weather-detail-container" flexDirection="row">
+            <div className="time-weather-complain">
+              <Card
+                className="detail-card detail-card-temp "
+                style={{ marginRight: "16px" }}
+              >
+                <Col className="detail-card-column" gutter={[16, 8]}>
+                  <div className="font detail-card-content detail-card-temperature">
+                    {curMenu.temperature}
+                    °C
+                  </div>
+                  <div className="sun-content">
+                    <div className="sunrise-content">
+                      <img
+                        className="sunrise-icon"
+                        src={sunrise}
+                        alt={`Иконка восхода`}
+                      />
+                      <div className="sunrise-time">
+                        <p className="font sunrise-label">Восход</p>
+                        <p className="font sunrise-time-text">
+                          {sunData.sunrise && new Date(sunData.sunrise).toLocaleTimeString(
+                            "en-US",
+                            {
+                              hour12: false,
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              timeZone: "UTC",
+                            }
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="sunset-content">
+                      <img
+                        className="sunset-icon"
+                        src={sunset}
+                        alt={`Иконка захода`}
+                      />
+                      <div className="sunset-time">
+                        <p className="font sunset-label">Заход</p>
+                        <p className="font sunset-time-text">
+                          {sunData.sunset && new Date(sunData.sunset).toLocaleTimeString(
+                            "en-US",
+                            {
+                              hour12: false,
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              timeZone: "UTC",
+                            }
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </Col>
+              </Card>
+              <Card
+                className="detail-card detail-card-weather"
+                style={{ marginRight: "16px" }}
+              >
+                <Col className="weather-description" gutter={[16, 8]}>
+                  <img src={iconMappings[curMenu.weatherType]} alt={`Погода`} />
+                  <div className="font detail-card-content detail-card-description">
+                    {curMenu.weatherType}
+                  </div>
+                </Col>
+              </Card>
+            </div>
+            <Card className="detail-card detail-card-param">
+              <Col className="all-detail-content">
+                <Row>
+                  <div className="detail-content">
+                    <img
+                      className="humidity-icon"
+                      src={humidity}
+                      alt={`Иконка влажности`}
+                    />
+                    <p className="font humidity-text">{curMenu.humidity}%</p>
+                    <p className="font humidity-label">Влажность</p>
+                  </div>
+                  <div className="detail-content">
+                    <img
+                      className="wind-speed-icon"
+                      src={wind_speed}
+                      alt={`Иконка скорсоти ветра`}
+                    />
+                    <p className="font wind-speed-text">
+                      {curMenu.windSpeed} км/ч
+                    </p>
+                    <p className="font wind-speed-label">Скорость ветра</p>
+                  </div>
+                </Row>
+                <Row>
+                  <div className="detail-content">
+                    <img
+                      className="pressure-icon"
+                      src={pressure}
+                      alt={`Иконка давления`}
+                    />
+                    <p className="font pressure-text">{curMenu.pressure}</p>
+                    <p className="font pressure-label">Давление</p>
+                  </div>
+                  <div className="detail-content">
+                    <img className="uv-icon" src={uv} alt={`Иконка uv`} />
+                    <p className="font uv-text">{curMenu.uv}</p>
+                    <p className="font uv-label">UV</p>
+                  </div>
+                </Row>
+              </Col>
+            </Card>
           </Row>
         </Card>
-      );
-    })}
-  </div>
-</Card>
-    
-    </Row>
-  </div>
+      </Row>
+      <Row gutter={[8, 16]} style={{ justifyContent: "center" }}>
+        <Card
+          className="card-weather-5-days"
+          size="small"
+          style={{ background: "some" }}
+          title={<div className="font card-title">Погода на 5 дней</div>}
+        >
+          <Row
+            gutter={[1, 2]}
+            style={{
+              flexDirection: "column",
+              justifyContent: "space-between",
+              height: "100%",
+            }}
+          >
+            {fiveDays &&
+              fiveDays.map((day, index) => (
+                <Row
+                  className="card-weather-5-days-row"
+                  gutter={[4, 4]}
+                  key={index}
+                >
+                  <Space size={100}>
+                    <img
+                      className="card-weather-5-days-icon"
+                      src={iconMappings[day.weatherType]}
+                      alt={`Погода`}
+                    />
+                    <div className="font card-weather-5-days-temperature">
+                      {day.temperature}°C
+                    </div>
+                    <div>
+                      {new Date(day.date).getDate()}{" "}
+                      {months[new Date(day.date).getMonth()]}
+                    </div>
+                  </Space>
+                </Row>
+              ))}
+          </Row>
+        </Card>
 
-)}
+        <Card
+          className="card-weather-hourly"
+          size="small"
+          title={<div className="font card-title">Почасовая погода</div>}
+        >
+          <div className="card-weather-hourly-container">
+            {hourlyData &&
+              hourlyData.map((hour, index) => {
+                return (
+                  <Card className="hourly-card" key={index}>
+                    <Row
+                      gutter={[16, 8]}
+                      align="center"
+                      style={{ display: "flex", flexDirection: "column" }}
+                    >
+                      <div className="font hourly-card-content hourly-card-content-time">
+                        {" "}
+                        {new Date(hour.date).getHours()}:00
+                      </div>
+                      <img
+                        src={iconMappings[hour.weatherType]}
+                        alt={`Погода ${index + 1}`}
+                      />
+                      <div className="font hourly-card-content hourly-card-content-temperature">
+                        {hour.temperature}C
+                      </div>
+                      <img
+                        src={arow_wind}
+                        alt={`Ветер ${index + 1}`}
+                        style={{
+                          transform: `rotate(${getWindRotationAngle(
+                            hour.windType
+                          )}deg)`,
+                        }}
+                      />
+                      <div className="font hourly-card-content hourly-card-content-wind">
+                        {hour.windSpeed} м/с
+                      </div>
+                    </Row>
+                  </Card>
+                );
+              })}
+          </div>
+        </Card>
+      </Row>
+    </div>
+  );
+};
 
 export default GridTable;

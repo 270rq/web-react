@@ -99,7 +99,7 @@
 .temperature-label{
   font-size: 1.2vw;
 }
-@media (max-width: 1010px) {
+@media (max-width: 1123px) {
     .detail-card-column{
       height: 50%;
       margin: 0;

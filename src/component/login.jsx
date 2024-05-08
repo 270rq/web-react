@@ -3,7 +3,7 @@ import { Button, Checkbox, Form, Input, Space, message} from 'antd';
 import axios from "axios";
 import Profile from './profile';
 
-const Login = ({ onLogin }) => {
+const Login = ({ onLogin, onLogout }) => {
   const [form] = Form.useForm();
 
   const onFinish = async (values) => {
@@ -56,7 +56,7 @@ const Login = ({ onLogin }) => {
         localStorage.setItem('obtained', new Date().toDateString());
         onLogin();
         // Переход на страницу профиля после успешной регистрации
-        return <Profile />; // Возвращает компонент Profile
+        return <Profile onLogout={onLogout} />; // Возвращает компонент Profile
       } else {
         message.error("Что-то пошло не так");
       }

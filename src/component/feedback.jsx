@@ -12,11 +12,11 @@ const FeedbackForm = () => {
   
     try {
       const response = await axios.post('http://localhost:3000/api/feed-back', {
-        feedback: feedback,
+        message: feedback,
         email: email
       });
   
-      if (response.status === 200) {
+      if (response.status === 201) {
         message.success("Ваш отзыв успешно отправлен");
         setFeedback("");
         setEmail("");

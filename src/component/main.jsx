@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined, HomeOutlined, EnvironmentOutlined, CommentOutlined} from "@ant-design/icons";
+import {
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  UserOutlined,
+  HomeOutlined,
+  EnvironmentOutlined,
+  CommentOutlined,
+} from "@ant-design/icons";
 import { Layout, Menu, Button } from "antd";
 import GridTable from "./grid";
 import Login from "./login";
@@ -27,9 +34,17 @@ const Main = () => {
       case "map":
         return <MapPage />;
       case "login":
-        return <Login onLogin={afterLogin} />;
+        return <Login onLogin={afterLogin}  onLogout={() => {
+          setCurrentPage("login");
+        }}/>;
       case "profile":
-        return <Profile id = {localStorage.getItem("id")} />;
+        return (
+          <Profile
+            onLogout={() => {
+              setCurrentPage("login");
+            }}
+          />
+        );
       case "feedback": // Добавляем обработку для страницы обратной связи
         return <FeedbackForm />;
       default:
@@ -39,9 +54,20 @@ const Main = () => {
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      <Sider className={!collapsed ? "sider" : "sider-non-active"} trigger={null} collapsible collapsed={collapsed}>
+      <Sider
+        className={!collapsed ? "sider" : "sider-non-active"}
+        trigger={null}
+        collapsible
+        collapsed={collapsed}
+      >
         <div className="demo-logo-vertical" />
-        <Menu theme="dark" mode="inline" selectedKeys={[`${currentPage}`]} defaultSelectedKeys={["weather"]} onSelect={({ key }) => setCurrentPage(key)}>
+        <Menu
+          theme="dark"
+          mode="inline"
+          selectedKeys={[`${currentPage}`]}
+          defaultSelectedKeys={["weather"]}
+          onSelect={({ key }) => setCurrentPage(key)}
+        >
           <Menu.Item key="weather" icon={<HomeOutlined />}>
             Погода
           </Menu.Item>
@@ -53,7 +79,6 @@ const Main = () => {
               <Menu.Item key="profile" icon={<UserOutlined />}>
                 Профиль
               </Menu.Item>
-             
             </>
           ) : (
             <Menu.Item key="login" icon={<UserOutlined />}>
@@ -62,17 +87,30 @@ const Main = () => {
           )}
           <Menu.Item key="feedback" icon={<CommentOutlined />}>
             Обратная связь
-          </Menu.Item> {/* Добавляем кнопку обратной связи в меню */}
+          </Menu.Item>{" "}
+          {/* Добавляем кнопку обратной связи в меню */}
         </Menu>
       </Sider>
       <Layout>
-        <Header style={{ background: "#fff", padding: 0, display: "flex", justifyContent: "space-between" }}>
+        <Header
+          style={{
+            background: "#fff",
+            padding: 0,
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
           <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
             <Button
               type="text"
               icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
               onClick={() => setCollapsed(!collapsed)}
-              style={{ fontSize: "16px", width: "4rem", height: "100%", flexShrink: "0" }}
+              style={{
+                fontSize: "16px",
+                width: "4rem",
+                height: "100%",
+                flexShrink: "0",
+              }}
             />
             {currentPage === "weather" && (
               <>
@@ -81,7 +119,14 @@ const Main = () => {
             )}
           </div>
         </Header>
-        <Content className={!collapsed ? "hideContent" : ""} style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <Content
+          className={!collapsed ? "hideContent" : ""}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           {renderPage()}
         </Content>
       </Layout>

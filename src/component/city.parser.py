@@ -16,10 +16,10 @@ mycursor = mydb.cursor()
 # Добавление записей в таблицу регион
 for index,city in enumerate(cities):
     region_name = city[1]
-    mycursor.execute("SELECT * FROM Region WHERE region_name = %s", (region_name,))
+    mycursor.execute("SELECT * FROM Region WHERE name = %s", (region_name,))
     region = mycursor.fetchone()
     if region is None:
-        mycursor.execute("INSERT INTO Region (region_name) VALUES (%s)", (region_name,))
+        mycursor.execute("INSERT INTO Region (name) VALUES (%s)", (region_name,))
         mydb.commit()
         region_id = mycursor.lastrowid
     else:
@@ -27,5 +27,5 @@ for index,city in enumerate(cities):
 
     # Добавление записей в таблицу город
     city_name = city[0]
-    mycursor.execute("INSERT INTO City (region_id, name) VALUES (%s, %s)", (region_id, city_name))
+    mycursor.execute("INSERT INTO City (regionId, name) VALUES (%s, %s)", (region_id, city_name))
     mydb.commit()

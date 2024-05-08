@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { YMaps, Map, Placemark, RoutePanel } from "@pbe/react-yandex-maps";
+import { YMaps, Map, Placemark } from "@pbe/react-yandex-maps";
 import { Cascader, Form, Button, Segmented } from "antd";
 import GridMapTable from "./infornation";
 import axios from "axios";
@@ -118,7 +118,6 @@ const MapComponent = () => {
               properties={marker.properties}
             />
           ))}
-          <RoutePanel visible={true} destination={[55.751574, 37.573856]} />
 
           <div
             style={{

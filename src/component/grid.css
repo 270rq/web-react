@@ -41,6 +41,7 @@
 } 
 .card-weather-detail-container{
   justify-content: space-between;
+  flex-wrap: nowrap;
 }
 .card-weather-t,.card-weather-hourly,.card-weather-5-days  ,.card-weather-detail{
   margin-bottom: 0.1rem;
@@ -172,10 +173,11 @@
   margin-bottom: 1rem;
 }
 .card-weather-hourly-container{
-  overflow: scroll;
+  overflow-x: scroll;
+  overflow-y: hidden;
   display: flex;
+  height: 100%;
   flex-direction: row;
-  justify-content: space-around;
 }
 .card-weather-detail {
   display: flex;
@@ -239,7 +241,6 @@
 .all-detail-content{
   justify-content: center;
   display: flex;
-  flex-direction: column;
 }
 .GeiLocation-button:hover{background-color: #3c9612 !important;
 }   

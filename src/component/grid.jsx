@@ -14,6 +14,16 @@ import axios from "axios";
 import iconMappings from "./icon";
 import { getWindRotationAngle } from "./windArrow";
 
+const WeatherType = {
+  Fog: "Туманно",
+  Sunny: "Солнечно",
+  Cloudy: "Пасмурно",
+  Rain: "Дождь",
+  Snow: "Снег",
+  Windy: " Ветренно",
+  Storm: "Гроза",
+};
+
 const GridTable = ({ city, region }) => {
   const [hourlyData, setHourlyData] = useState([]);
   const [sunData, setSunData] = useState({});
@@ -56,7 +66,9 @@ const GridTable = ({ city, region }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const weatherUrl = `http://localhost:3000/api/menu/getWeather/${region}/${city}/2024-04-20T13:54:35.478Z`;
+        const currentDate = new Date();
+        const formattedDate = currentDate.toISOString();
+        const weatherUrl = `http://localhost:3000/api/menu/getWeather/${region}/${city}/${formattedDate}`;
 
         const responseWeather = await axios.get(weatherUrl);
         console.log(responseWeather.data);
@@ -77,12 +89,28 @@ const GridTable = ({ city, region }) => {
           setCurMenu({});
         }
         setSunData(responseWeather.data.sunData[0] || []);
-        setHourlyData(responseWeather.data.weatherForFiveHours);
+        const hourly = {};
+
+        // Итерируемся по каждому элементу массива
+        responseWeather.data.weatherForFiveHours.forEach((item) => {
+          // Получаем дату и час из даты
+          const date = new Date(item.date).getUTCDay();
+          const hour = new Date(item.date).getUTCHours();
+          const key = `${date}_${hour}`;
+
+          // Если комбинация даты и часа уже есть в объекте averageTemperatures, добавляем температуру к сумме и увеличиваем счетчик
+          if (hourly[key]) {
+            hourly[key] = item
+          } else {
+            // Если комбинации даты и часа еще нет, создаем ее в объекте averageTemperatures
+            hourly[key] = item;
+          }
+        });
+        setHourlyData(Object.values(hourly).sort((a,b)=>new Date(a.date) - new Date(b.date)));
         // Группируем данные по дням
         const fiveDaysObject = groupMenuByDay(
           responseWeather.data.weatherForFiveDays
         );
-
         // Создаем массив для хранения данных по дням
         const daysArray = [];
 
@@ -94,7 +122,6 @@ const GridTable = ({ city, region }) => {
           let day = fiveDaysObject[key][0]; // Берем первый элемент из массива данных для текущей даты
           let date = new Date(key); // Создаем объект Date из текущей даты
           date.setHours(12, 0, 0); // Устанавливаем время 12:00 для текущей даты
-
           // Если есть данные для текущей даты, выбираем наиболее релевантные
           if (fiveDaysObject[key].length > 1) {
             let index = Math.abs(
@@ -158,15 +185,16 @@ const GridTable = ({ city, region }) => {
                       <div className="sunrise-time">
                         <p className="font sunrise-label">Восход</p>
                         <p className="font sunrise-time-text">
-                          {sunData.sunrise && new Date(sunData.sunrise).toLocaleTimeString(
-                            "en-US",
-                            {
-                              hour12: false,
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              timeZone: "UTC",
-                            }
-                          )}
+                          {sunData.sunrise &&
+                            new Date(sunData.sunrise).toLocaleTimeString(
+                              "en-US",
+                              {
+                                hour12: false,
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                timeZone: "UTC",
+                              }
+                            )}
                         </p>
                       </div>
                     </div>
@@ -179,15 +207,16 @@ const GridTable = ({ city, region }) => {
                       <div className="sunset-time">
                         <p className="font sunset-label">Заход</p>
                         <p className="font sunset-time-text">
-                          {sunData.sunset && new Date(sunData.sunset).toLocaleTimeString(
-                            "en-US",
-                            {
-                              hour12: false,
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              timeZone: "UTC",
-                            }
-                          )}
+                          {sunData.sunset &&
+                            new Date(sunData.sunset).toLocaleTimeString(
+                              "en-US",
+                              {
+                                hour12: false,
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                timeZone: "UTC",
+                              }
+                            )}
                         </p>
                       </div>
                     </div>
@@ -199,9 +228,13 @@ const GridTable = ({ city, region }) => {
                 style={{ marginRight: "16px" }}
               >
                 <Col className="weather-description" gutter={[16, 8]}>
-                  <img src={iconMappings[curMenu.weatherType]} alt={`Погода`} />
+                  <img
+                    src={iconMappings[curMenu.weatherType]}
+                    style={{ height: "7rem" }}
+                    alt={`Погода`}
+                  />
                   <div className="font detail-card-content detail-card-description">
-                    {curMenu.weatherType}
+                    {WeatherType[curMenu.weatherType]}
                   </div>
                 </Col>
               </Card>
@@ -264,6 +297,9 @@ const GridTable = ({ city, region }) => {
               flexDirection: "column",
               justifyContent: "space-between",
               height: "100%",
+              overflowY: "auto",
+              overflowX: "hidden",
+              flexWrap: "nowrap",
             }}
           >
             {fiveDays &&
@@ -283,7 +319,7 @@ const GridTable = ({ city, region }) => {
                       {day.temperature}°C
                     </div>
                     <div>
-                      {new Date(day.date).getDate()}{" "}
+                      {new Date(day.date).getUTCDate()}{" "}
                       {months[new Date(day.date).getMonth()]}
                     </div>
                   </Space>
@@ -295,23 +331,33 @@ const GridTable = ({ city, region }) => {
         <Card
           className="card-weather-hourly"
           size="small"
+          styles={{ body: { height: "85%" } }}
           title={<div className="font card-title">Почасовая погода</div>}
         >
           <div className="card-weather-hourly-container">
             {hourlyData &&
               hourlyData.map((hour, index) => {
                 return (
-                  <Card className="hourly-card" key={index}>
+                  <Card
+                    className="hourly-card"
+                    key={index}
+                    style={{ height: "100%", width: "5rem" }}
+                  >
                     <Row
                       gutter={[16, 8]}
                       align="center"
-                      style={{ display: "flex", flexDirection: "column" }}
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                      }}
                     >
                       <div className="font hourly-card-content hourly-card-content-time">
                         {" "}
                         {new Date(hour.date).getHours()}:00
                       </div>
                       <img
+                        style={{ width: "2.5rem", height: "2.5rem" }}
                         src={iconMappings[hour.weatherType]}
                         alt={`Погода ${index + 1}`}
                       />
@@ -327,7 +373,10 @@ const GridTable = ({ city, region }) => {
                           )}deg)`,
                         }}
                       />
-                      <div className="font hourly-card-content hourly-card-content-wind">
+                      <div
+                        style={{ width: "4rem" }}
+                        className="font hourly-card-content hourly-card-content-wind"
+                      >
                         {hour.windSpeed} м/с
                       </div>
                     </Row>

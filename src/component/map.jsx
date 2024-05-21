@@ -4,6 +4,7 @@ import { Cascader, Form, Button, Segmented } from "antd";
 import GridMapTable from "./infornation";
 import axios from "axios";
 import "./map.css";
+import GridLvlTable from "./allergen.lvl";
 
 const ScrollableSegmented = ({ options, onChange }) => {
   return (
@@ -80,7 +81,6 @@ const MapComponent = () => {
 
   const handleAllergenChange = (value) => {
     setSelectedAllergen(value);
-    // Make API call based on selected allergen and hour
   };
 
   const handleSliderChange = (value) => {
@@ -158,6 +158,7 @@ const MapComponent = () => {
                 </Button>
               </Form.Item>
             </Form>
+            <GridLvlTable/>
           </div>
         </Map>
         <div

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { YMaps, Map, Placemark } from "@pbe/react-yandex-maps";
-import { Cascader, Form, Button, Segmented } from "antd";
+import { Cascader, Form, Segmented } from "antd";
 import GridMapTable from "./infornation";
 import axios from "axios";
 import "./map.css";
@@ -104,15 +104,20 @@ const MapComponent = () => {
     return options;
   };
 
-  // Определяем цвет в зависимости от уровня
   const getColorForLevel = (lvl) => {
-    if (lvl < 2) {
-      return 'green'; // Низкий уровень
-    } else if (lvl < 4) {
-      return 'yellow'; // Средний уровень
-    } else {
-      return 'red'; // Высокий уровень
+    let color = "#bcbcbc";
+  
+    if (lvl >= 1 && lvl <= 10) {
+      color = "#00ff00";
+    } else if (lvl >= 11 && lvl <= 100) {
+      color = "#ffff00";
+    } else if (lvl >= 101 && lvl <= 1000) {
+      color = "#ffa500";
+    } else if (lvl >= 1001) {
+      color = "#ff0000";
     }
+  
+    return color;
   };
 
   return (
@@ -129,7 +134,7 @@ const MapComponent = () => {
               geometry={marker.geometry}
               properties={marker.properties}
               options={{
-                iconColor: marker.properties.iconColor, // Назначаем динамический цвет
+                iconColor: marker.properties.iconColor, 
               }}
             />
           ))}
@@ -138,7 +143,7 @@ const MapComponent = () => {
             style={{
               position: "absolute",
               top: "40%",
-              left: "10%",
+              left: "15%",
               transform: "translate(-50%, -50%)",
               backgroundColor: "white",
               padding: "20px",
@@ -152,7 +157,7 @@ const MapComponent = () => {
             >
               <GridMapTable />
             </div>
-            <Form onFinish={handleAllergenChange} style={{ width: "200px" }}>
+            <Form onFinish={handleAllergenChange} style={{ width: "300px" }}>
               <Form.Item
                 name="TreeSelect"
                 label="Аллерген"
@@ -165,12 +170,6 @@ const MapComponent = () => {
                   placeholder="Выберите аллерген"
                   changeOnSelect
                 />
-              </Form.Item>
-
-              <Form.Item>
-                <Button type="primary" htmlType="submit">
-                  Показать на карте
-                </Button>
               </Form.Item>
             </Form>
             <GridLvlTable/>

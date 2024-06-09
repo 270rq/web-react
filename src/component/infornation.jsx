@@ -6,7 +6,7 @@ import tshirt from '../icon/tshirt.svg';
 import shower from '../icon/shower.svg';
 import window from '../icon/window.svg';
 import bisicle from '../icon/bisicle.svg';
-import tree from '../icon/club-svgrepo-com.svg'
+import tree from '../icon/lvl/lvl0_allergen.svg'
 
 const GridMapTable = () => {
   const recommendations = [

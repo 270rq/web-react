@@ -29,7 +29,7 @@ const MapComponent = () => {
       try {
         const response = await axios.get("http://localhost:3000/api/family");
         if (!response.data) {
-          throw new Error("Network response for family data was not valid");
+          throw new Error("Сетевой ответ для данных о семье был недействителен");
         }
         const data = response.data;
         const newFlowerOptions = data.map((family) => ({
@@ -42,7 +42,7 @@ const MapComponent = () => {
         }));
         setFlowerOptions(newFlowerOptions);
       } catch (error) {
-        console.error("Error fetching data:", error.message);
+        console.error("Ошибка при получении данных:", error.message);
       }
     };
     fetchData();
@@ -67,12 +67,13 @@ const MapComponent = () => {
               properties: {
                 hintContent: item.flowerId,
                 balloonContent: item.lvl,
+                iconColor: getColorForLevel(item.lvl),
               },
             }));
             setMarkers(newMarkers);
           }
         } catch (error) {
-          console.error("Error fetching allergen data:", error.message);
+          console.error("Ошибка при получении данных об аллергене:", error.message);
         }
       }
     };
@@ -103,6 +104,17 @@ const MapComponent = () => {
     return options;
   };
 
+  // Определяем цвет в зависимости от уровня
+  const getColorForLevel = (lvl) => {
+    if (lvl < 2) {
+      return 'green'; // Низкий уровень
+    } else if (lvl < 4) {
+      return 'yellow'; // Средний уровень
+    } else {
+      return 'red'; // Высокий уровень
+    }
+  };
+
   return (
     <YMaps query={{ apikey: "ed158a2d-97a9-49a1-8011-28555c611f7a" }}>
       <div style={{ width: "100%", height: "100vh", position: "relative" }}>
@@ -116,13 +128,16 @@ const MapComponent = () => {
               key={index}
               geometry={marker.geometry}
               properties={marker.properties}
+              options={{
+                iconColor: marker.properties.iconColor, // Назначаем динамический цвет
+              }}
             />
           ))}
 
           <div
             style={{
               position: "absolute",
-              top: "50%",
+              top: "40%",
               left: "10%",
               transform: "translate(-50%, -50%)",
               backgroundColor: "white",

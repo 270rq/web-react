@@ -2,6 +2,7 @@ import React from 'react';
 import { Button, Checkbox, Form, Input, Space, message} from 'antd';
 import axios from "axios";
 import Profile from './profile';
+import { config } from '../config/config';
 
 const Login = ({ onLogin, onLogout }) => {
   const [form] = Form.useForm();
@@ -11,7 +12,7 @@ const Login = ({ onLogin, onLogout }) => {
       console.log('Success:', values);
       const username = values.username;
       const password = values.password;
-      const result = await axios.post(`${process.env.BACKEND_HOST}/auth/login`, {
+      const result = await axios.post(`${config.host}/auth/login`, {
         email: username,
         password: password,
       });
@@ -43,7 +44,7 @@ const Login = ({ onLogin, onLogout }) => {
       const values = await form.validateFields();
       const username = values.username;
       const password = values.password;
-      const result = await axios.post('BACKEND_HOST/auth/signUp', {
+      const result = await axios.post(`${config.host}/auth/signUp`, {
         email: username,
         password: password,
       });

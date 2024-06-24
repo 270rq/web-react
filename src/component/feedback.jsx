@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Form, Input, Button, message } from "antd";
 import axios from "axios";
+import { config } from "../config/config";
 
 const FeedbackForm = () => {
   const [feedback, setFeedback] = useState("");
@@ -11,7 +12,7 @@ const FeedbackForm = () => {
     console.log("Email: ", email);
   
     try {
-      const response = await axios.post(`${process.env.BACKEND_HOST}/feed-back`, {
+      const response = await axios.post(`${config.host}/feed-back`, {
         message: feedback,
         email: email
       });

@@ -5,6 +5,7 @@ import GridMapTable from "./infornation";
 import axios from "axios";
 import "./map.css";
 import GridLvlTable from "./allergen.lvl";
+import { config } from "../config/config";
 
 const ScrollableSegmented = ({ options, onChange }) => {
   return (
@@ -27,7 +28,7 @@ const MapComponent = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("BACKEND_HOST/family");
+        const response = await axios.get(`${config.host}/family`);
         if (!response.data) {
           throw new Error("Сетевой ответ для данных о семье был недействителен");
         }
@@ -48,17 +49,16 @@ const MapComponent = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    const fetchData = async () => {
+    const fetchAllergens = async () => {
       if (selectedAllergen) {
         try {
           const date = new Date();
           const curHour = date.getHours();
           const addHour = selectedHour - curHour;
-          date.setHours(curHour, 0, 0, 0);
+          date.setHours(curHour-1, 0, 0, 0);
           date.setMinutes(date.getMinutes() + addHour * 60);
           const response = await axios.get(
-            `${process.env.BACKEND_HOST}/map/flower/${selectedAllergen['TreeSelect'][1]}?date=${date}`
+            `${config.host}/map/flower/${selectedAllergen[1]}?date=${date}`
           );
           if (response.data) {
             const allergenData = response.data;
@@ -77,14 +77,14 @@ const MapComponent = () => {
         }
       }
     };
-    fetchData();
-  }, [selectedHour, selectedAllergen]);
 
   const handleAllergenChange = (value) => {
     setSelectedAllergen(value);
+    fetchAllergens()
   };
 
   const handleSliderChange = (value) => {
+    console.log(value)
     setHour(value);
     handleAllergenChange(selectedAllergen);
   };
@@ -157,7 +157,7 @@ const MapComponent = () => {
             >
               <GridMapTable />
             </div>
-            <Form onFinish={handleAllergenChange} style={{ width: "300px" }}>
+            <Form style={{ width: "300px" }}>
               <Form.Item
                 name="TreeSelect"
                 label="Аллерген"
@@ -167,6 +167,7 @@ const MapComponent = () => {
               >
                 <Cascader
                   options={flowerOptions}
+                  onChange={handleAllergenChange}
                   placeholder="Выберите аллерген"
                   changeOnSelect
                 />

@@ -13,6 +13,7 @@ import CurrentDateTime from "../component/time";
 import axios from "axios";
 import iconMappings from "./icon";
 import { getWindRotationAngle } from "./windArrow";
+import { config } from "../config/config";
 
 const WeatherType = {
   Fog: "Туманно",
@@ -68,7 +69,7 @@ const GridTable = ({ city, region }) => {
       try {
         const currentDate = new Date();
         const formattedDate = currentDate.toISOString();
-        const weatherUrl = `http://localhost:3000/api/menu/getWeather/${region}/${city}/${formattedDate}`;
+        const weatherUrl = `${config.host}/menu/getWeather/${region}/${city}/${formattedDate}`;
 
         const responseWeather = await axios.get(weatherUrl);
         console.log(responseWeather.data);

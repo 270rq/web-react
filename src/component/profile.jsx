@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Form, Input, Checkbox, Button, message, Cascader, Modal } from "antd";
 import axios from "axios";
 import { YMaps, Map, Placemark } from "@pbe/react-yandex-maps";
+import { config } from "../config/config";
 
 const Profile = ({onLogout}) => {
   const [form] = Form.useForm();
@@ -18,7 +19,7 @@ const Profile = ({onLogout}) => {
       try {
         const id = +localStorage.getItem("id");
         const response = await axios.get(
-          `http://localhost:3000/api/user/${id}`
+          `${config.host}/user/${id}`
         );
         if (!response.data) {
           throw new Error("Network response for user data was not valid");
@@ -26,7 +27,7 @@ const Profile = ({onLogout}) => {
         setUserData(response.data);
         form.setFieldsValue(response.data);
         const responseFlower = await axios.get(
-          "http://localhost:3000/api/family"
+          `${config.host}/family`
         );
         if (!responseFlower.data) {
           throw new Error("Network response for family data was not valid");
@@ -53,7 +54,7 @@ const Profile = ({onLogout}) => {
     try {
       const id = +localStorage.getItem("id");
       const response = await axios.put(
-        `http://localhost:3000/api/user/${id}`,
+        `${config.host}/user/${id}`,
         values
       );
       if (response.status === 200) {

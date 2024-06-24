@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Select } from "antd";
 import axios from "axios";
+import { config } from "../config/config";
 
 const CitySearch = ({ setCity, setRegion }) => {
   const [allCities, setAllCities] = useState([]);
@@ -8,7 +9,7 @@ const CitySearch = ({ setCity, setRegion }) => {
   useEffect(() => {
     const searchCities = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/region");
+        const response = await axios.get(`${config.host}/region`);
         const data = response.data;
         const citiesData = data.flatMap((region) =>
           region.city.map((city) => `${region.name} ${city.name}`)

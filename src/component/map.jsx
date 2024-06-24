@@ -27,7 +27,7 @@ const MapComponent = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/family");
+        const response = await axios.get("BACKEND_HOST/family");
         if (!response.data) {
           throw new Error("Сетевой ответ для данных о семье был недействителен");
         }
@@ -58,7 +58,7 @@ const MapComponent = () => {
           date.setHours(curHour, 0, 0, 0);
           date.setMinutes(date.getMinutes() + addHour * 60);
           const response = await axios.get(
-            `http://localhost:3000/api/map/flower/${selectedAllergen['TreeSelect'][1]}?date=${date}`
+            `${process.env.BACKEND_HOST}/map/flower/${selectedAllergen['TreeSelect'][1]}?date=${date}`
           );
           if (response.data) {
             const allergenData = response.data;

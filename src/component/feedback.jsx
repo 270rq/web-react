@@ -11,7 +11,7 @@ const FeedbackForm = () => {
     console.log("Email: ", email);
   
     try {
-      const response = await axios.post('http://localhost:3000/api/feed-back', {
+      const response = await axios.post(`${process.env.BACKEND_HOST}/feed-back`, {
         message: feedback,
         email: email
       });

@@ -68,7 +68,7 @@ const GridTable = ({ city, region }) => {
       try {
         const currentDate = new Date();
         const formattedDate = currentDate.toISOString();
-        const weatherUrl = `http://localhost:3000/api/menu/getWeather/${region}/${city}/${formattedDate}`;
+        const weatherUrl = `${process.env.BACKEND_HOST}/menu/getWeather/${region}/${city}/${formattedDate}`;
 
         const responseWeather = await axios.get(weatherUrl);
         console.log(responseWeather.data);

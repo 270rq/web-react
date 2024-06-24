@@ -18,7 +18,7 @@ const Profile = ({onLogout}) => {
       try {
         const id = +localStorage.getItem("id");
         const response = await axios.get(
-          `http://localhost:3000/api/user/${id}`
+          `${process.env.BACKEND_HOST}/user/${id}`
         );
         if (!response.data) {
           throw new Error("Network response for user data was not valid");
@@ -26,7 +26,7 @@ const Profile = ({onLogout}) => {
         setUserData(response.data);
         form.setFieldsValue(response.data);
         const responseFlower = await axios.get(
-          "http://localhost:3000/api/family"
+          `${process.env.BACKEND_HOST}/family`
         );
         if (!responseFlower.data) {
           throw new Error("Network response for family data was not valid");
@@ -53,7 +53,7 @@ const Profile = ({onLogout}) => {
     try {
       const id = +localStorage.getItem("id");
       const response = await axios.put(
-        `http://localhost:3000/api/user/${id}`,
+        `${process.env.BACKEND_HOST}/user/${id}`,
         values
       );
       if (response.status === 200) {

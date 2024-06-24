@@ -8,7 +8,7 @@ const CitySearch = ({ setCity, setRegion }) => {
   useEffect(() => {
     const searchCities = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/region");
+        const response = await axios.get(`${process.env.BACKEND_HOST}/region`);
         const data = response.data;
         const citiesData = data.flatMap((region) =>
           region.city.map((city) => `${region.name} ${city.name}`)

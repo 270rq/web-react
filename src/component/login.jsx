@@ -89,7 +89,9 @@ const Login = ({ onLogin, onLogout }) => {
       <Form.Item
         label="Пароль"
         name="password"
-        rules={[{ required: true, message: 'Пожалуйста, введите свой пароль!' }]}
+        rules={[{ required: true, message: 'Пожалуйста, введите свой пароль!' },
+          { min: 6, max: 20, message: 'Пароль должен быть от 6 до 20 символов!' },
+        ]}
       >
         <Input.Password />
       </Form.Item>
